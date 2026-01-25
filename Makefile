@@ -1,8 +1,8 @@
-SHELL := /bin/bash
+SHELL := /usr/bin/env bash
 
 # Function to determine Docker Compose command
 define docker_compose_cmd
-	$(if $(shell command -v docker-compose 2> /dev/null),docker-compose,$(if $(shell command -v docker compose 2> /dev/null),docker compose,))
+	$(if $(shell command -v docker compose 2> /dev/null),docker compose,$(if $(shell command -v docker-compose 2> /dev/null),docker-compose,))
 endef
 
 
