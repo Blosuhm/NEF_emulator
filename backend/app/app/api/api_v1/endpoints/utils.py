@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import requests
@@ -220,13 +221,17 @@ class ReportLogging(APIRoute):
 
         return custom_route_handler
 
-    def read_log_file(self):
-        with open(settings.REPORT_PATH) as fp:
-            return json.load(fp)
-
-    def write_log_file(self, listObj):
-        with open(settings.REPORT_PATH, 'w') as json_file:
-            json.dump(listObj, json_file, indent=4, separators=(',', ': '))
+    def write_log_file(self, log_entry):
+        try:
+            # Use os.open directly to define flags instead of open("a") because
+            # it doesn't create the file.
+            with os.fdopen(os.open(settings.REPORT_PATH, os.O_APPEND | os.O_WRONLY), "a") as json_file:
+                json_file.write("\x1E")
+                json.dump(log_entry, json_file, indent=None)
+                json_file.write("\n")
+        except FileNotFoundError:
+            # If the report file doesn't exist ignore errors
+            pass
 
     def update_log_file(self, extra_fields):
         global logs_count
@@ -238,9 +243,7 @@ class ReportLogging(APIRoute):
             **extra_fields
         }
 
-        listObj = self.read_log_file()
-        listObj.append(log_entry)
-        self.write_log_file(listObj)
+        self.write_log_file(log_entry)
 
     def get_query_params(self, request_query_params):
         query_params = {
