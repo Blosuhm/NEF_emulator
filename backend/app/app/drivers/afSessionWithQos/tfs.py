@@ -14,8 +14,10 @@ class TfsAfSessionWithQos(AfSessionWithQosInterface):
         self,
         tfs_url: str,
     ) -> None:
-        self._client = httpx.AsyncClient(base_url=tfs_url + "/tfs-api/device")
-        self.device_id = ""
+        self._client = httpx.AsyncClient(
+            base_url=tfs_url + "/tfs-api/device/", verify=False
+        )
+        self.device_id = "718ae41e-687f-554d-8fd9-fa7e692da78a"
 
     def _craft_payload(self, uplink, downlink):
         payload = {
@@ -66,10 +68,10 @@ class TfsAfSessionWithQos(AfSessionWithQosInterface):
         self, subscription: AsSessionWithQoSSubscription, ues: List[UE], qos: QoSProfile
     ) -> None:
         payload = self._craft_payload(qos.uplinkBitRate, qos.downlinkBitRate)
-        self._client.post(self.device_id, json=payload)
+        await self._client.put(self.device_id, json=payload)
 
     async def revert_qos(
         self, subscription: AsSessionWithQoSSubscription, ues: List[UE]
     ) -> None:
         payload = self._craft_payload(0, 0)
-        self._client.post(self.device_id, json=payload)
+        await self._client.put(self.device_id, json=payload)

@@ -17,7 +17,7 @@ if settings.qos.backend == QoSInterfaceBackend.HUWAEI:
         settings.qos.api_password,
     )
 
-elif settings.qos.backend == QoSInterfaceBackend.HUWAEI:
+elif settings.qos.backend == QoSInterfaceBackend.TFS:
     from .tfs import TfsAfSessionWithQos
 
     _interface = TfsAfSessionWithQos(settings.qos.api_url)
