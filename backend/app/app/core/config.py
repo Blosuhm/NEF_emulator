@@ -20,23 +20,24 @@ from pydantic import (
 class QoSInterfaceBackend(Enum):
     NOOP = "noop"
     HUWAEI = "huwaei"
+    TFS = "tfs"
 
 
 class QoSInterfaceSettings(BaseModel):
     backend: QoSInterfaceBackend = QoSInterfaceBackend.NOOP
 
-    huwaei_api_url: str = ""
-    huwaei_api_user: str = ""
-    huwaei_api_password: str = ""
-    huwaei_default_ambrup: int = 0
-    huwaei_default_ambrdl: int = 0
+    api_url: str = ""
+    api_user: str = ""
+    api_password: str = ""
+    default_ambrup: int = 0
+    default_ambrdl: int = 0
 
     @validator(
-        "huwaei_api_url",
-        "huwaei_api_user",
-        "huwaei_api_password",
-        "huwaei_default_ambrup",
-        "huwaei_default_ambrdl",
+        "api_url",
+        "api_user",
+        "api_password",
+        "default_ambrup",
+        "default_ambrdl",
         always=True,
     )
     def validate_huwaei_set(cls, v, field, values):
@@ -174,7 +175,10 @@ class QoSSettings:
             self._qos_characteristics = parse_obj_as(dict[str, QoSProfile], data)
 
     def get_all_profiles(self) -> List[NamedQoSProfile]:
-        return [NamedQoSProfile(name=k, **v.dict()) for k, v in self._qos_characteristics.items()]
+        return [
+            NamedQoSProfile(name=k, **v.dict())
+            for k, v in self._qos_characteristics.items()
+        ]
 
     def get_qos_profile(self, reference: str) -> Optional[QoSProfile]:
         return self._qos_characteristics.get(reference)
