@@ -2,7 +2,6 @@ import json
 import secrets
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
-from typing_extensions import Annotated
 
 from pydantic import (
     AnyHttpUrl,
@@ -15,6 +14,7 @@ from pydantic import (
     parse_obj_as,
     validator,
 )
+from typing_extensions import Annotated
 
 
 class QoSInterfaceBackend(Enum):
@@ -27,10 +27,13 @@ class QoSInterfaceSettings(BaseModel):
     backend: QoSInterfaceBackend = QoSInterfaceBackend.NOOP
 
     api_url: str = ""
+
     api_user: str = ""
     api_password: str = ""
     default_ambrup: int = 0
     default_ambrdl: int = 0
+
+    device_uuid: str = ""
 
     @validator(
         "api_url",
@@ -45,6 +48,16 @@ class QoSInterfaceSettings(BaseModel):
             raise ValueError(
                 f"{field.name} must be set when huwaei QoS backend is in use"
             )
+        return v
+
+    @validator(
+        "api_url",
+        "device_uuid",
+        always=True,
+    )
+    def validate_tfs_set(cls, v, field, values):
+        if not v and values["backend"] == QoSInterfaceBackend.TFS:
+            raise ValueError(f"{field.name} must be set when tfs QoS backend is in use")
         return v
 
 

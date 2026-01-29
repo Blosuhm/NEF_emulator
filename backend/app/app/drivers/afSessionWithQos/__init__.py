@@ -20,7 +20,7 @@ if settings.qos.backend == QoSInterfaceBackend.HUWAEI:
 elif settings.qos.backend == QoSInterfaceBackend.TFS:
     from .tfs import TfsAfSessionWithQos
 
-    _interface = TfsAfSessionWithQos(settings.qos.api_url)
+    _interface = TfsAfSessionWithQos(settings.qos.api_url, settings.qos.device_uuid)
 else:
     from .noop import NoopAfSessionWithQos
 

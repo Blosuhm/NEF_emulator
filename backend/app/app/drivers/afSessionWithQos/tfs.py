@@ -13,11 +13,12 @@ class TfsAfSessionWithQos(AfSessionWithQosInterface):
     def __init__(
         self,
         tfs_url: str,
+        device_uuid: str,
     ) -> None:
         self._client = httpx.AsyncClient(
             base_url=tfs_url + "/tfs-api/device/", verify=False
         )
-        self.device_id = "718ae41e-687f-554d-8fd9-fa7e692da78a"
+        self.device_id = device_uuid
 
     def _craft_payload(self, uplink, downlink):
         payload = {
@@ -30,18 +31,14 @@ class TfsAfSessionWithQos(AfSessionWithQosInterface):
                         "acl": {
                             "endpoint_id": {
                                 "topology_id": {
-                                    "context_id": {
-                                        "context_uuid": {
-                                            "uuid": "43813baf-195e-5da6-af20-b3d0922e71a7"
-                                        }
-                                    }
+                                    "context_id": {"context_uuid": {"uuid": ""}}
                                 },
                                 "device_id": {"device_uuid": {"uuid": self.device_id}},
-                                "endpoint_uuid": {"uuid": "eth0-endpoint-uuid"},
+                                "endpoint_uuid": {"uuid": "ens4-endpoint-uuid"},
                             },
                             "direction": "ACLDIRECTION_BOTH",
                             "rule_set": {
-                                "name": "RATS 1",
+                                "name": "QoS",
                                 "type": "ACLRULETYPE_IPV4",
                                 "entries": [
                                     {
